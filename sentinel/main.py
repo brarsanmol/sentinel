@@ -19,5 +19,10 @@ class Sentinel(discord.Client):
         self.tree = app_commands.CommandTree(self)
 
     async def on_ready(self):
-        self.tree.add_command(Verify())
+        self.tree.add_command(
+            Verify(
+                self.configuration.get("Email", "ApiKey"),
+                self.configuration.get("Email", "Addresser"),
+            )
+        )
         await self.tree.sync()
