@@ -1,18 +1,16 @@
 import re
+import secrets
 
 import discord
 import sendgrid
 from discord import app_commands
 from sendgrid.helpers.mail import Mail
 
+from sentinel.decorators.is_direct_message_channel import (  # noqa
+    is_direct_message_channel,
+)
+
 EMAIL_PATTERN = re.compile(r"[a-zA-Z]+\.[a-zA-Z]+@mail\.mcgill\.ca")
-
-
-def is_direct_message_channel():
-    def predicate(interaction: discord.Interaction) -> bool:
-        return interaction.channel.type == discord.ChannelType.private
-
-    return app_commands.check(predicate)
 
 
 class Verify(app_commands.Command):
@@ -20,6 +18,9 @@ class Verify(app_commands.Command):
         super().__init__(name="verify", description="", callback=self.verify)
         self.mailer = sendgrid.SendGridAPIClient(api_key=api_key)
         self.addresser = addresser
+
+    def generate_token(self):
+        return secrets.token_urlsafe(4)
 
     def get_message(self, addressee: str, token: str) -> None:
         return Mail(
@@ -41,9 +42,19 @@ class Verify(app_commands.Command):
         self, interaction: discord.Interaction, email_address: str
     ) -> None:
         if EMAIL_PATTERN.match(email_address, re.IGNORECASE):
-            await interaction.response.send_message(
-                "The e-mail address provided is valid.", ephemeral=True
+            response = self.mailer.send(
+                self.get_message(email_address, self.generate_token())
             )
+
+            match response.status_code:
+                case 200:
+                    await interaction.response.send_message("", ephemeral=True)
+                case 401:
+                    await interaction.response.send_message("", ephemeral=True)
+                case 429:
+                    await interaction.response.send_message("", ephemeral=True)
+                case _:
+                    await interaction.response.send_message("", ephemeral=True)
         else:
             await interaction.response.send_message(
                 "The e-mail address provided is invalid.", ephemeral=True
