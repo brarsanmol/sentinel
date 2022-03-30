@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sentinel"
-version = "0.3.0-alpha"
+version = "0.4.0-alpha"
 license = "GPL-3.0-or-later"
 description = ""
 authors = ["Anmol Brar <brarsanmol@protonmail.com>"]
