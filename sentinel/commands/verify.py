@@ -13,15 +13,20 @@ def is_direct_message_channel():
     return app_commands.check(predicate)
 
 
-@app_commands.command()
-@app_commands.describe(email_address="Your @mail.mcgill.ca e-mail address.")
-@is_direct_message_channel()
-async def verify(interaction: discord.Interaction, email_address: str) -> None:
-    if EMAIL_PATTERN.match(email_address, re.IGNORECASE):
-        await interaction.response.send_message(
-            "The e-mail address provided is valid.", ephemeral=True
-        )
-    else:
-        await interaction.response.send_message(
-            "The e-mail address provided is invalid.", ephemeral=True
-        )
+class Verify(app_commands.Command):
+    def __init__(self):
+        super().__init__(name="verify", description="", callback=self.verify)
+
+    @app_commands.describe(email_address="Your @mail.mcgill.ca e-mail address.")  # noqa
+    @is_direct_message_channel()
+    async def verify(
+        self, interaction: discord.Interaction, email_address: str
+    ) -> None:
+        if EMAIL_PATTERN.match(email_address, re.IGNORECASE):
+            await interaction.response.send_message(
+                "The e-mail address provided is valid.", ephemeral=True
+            )
+        else:
+            await interaction.response.send_message(
+                "The e-mail address provided is invalid.", ephemeral=True
+            )

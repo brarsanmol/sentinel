@@ -1,13 +1,10 @@
 import configparser
 import os
-import re
 
 import discord
 from discord import app_commands
 
-from sentinel.commands.verify import verify
-
-EMAIL_PATTERN = re.compile(r"[a-zA-Z]+\\.[a-zA-Z]+@mail\\.mcgill\\.ca")
+from sentinel.commands.verify import Verify
 
 
 class Sentinel(discord.Client):
@@ -22,5 +19,5 @@ class Sentinel(discord.Client):
         self.tree = app_commands.CommandTree(self)
 
     async def on_ready(self):
-        self.tree.add_command(verify)
+        self.tree.add_command(Verify())
         await self.tree.sync()
