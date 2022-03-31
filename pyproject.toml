@@ -12,6 +12,7 @@ repository = "https://github.com/brarsanmol/sentinel"
 python = "^3.10"
 "discord.py" = {git = "https://github.com/Rapptz/discord.py.git", rev = "master"}
 sendgrid = "^6.9.7"
+pugsql = "^0.2.4"
 
 [tool.poetry.dev-dependencies]
 black = "^22.3.0"
