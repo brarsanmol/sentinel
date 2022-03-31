@@ -21,7 +21,7 @@ class Sentinel(discord.Client):
 
     async def on_ready(self):
         self.queries.connect(self.configuration.get("Database", "Url"))
-        self.queries.create_tokens_table()
+        self.queries.create_verification_tokens_table()
         self.queries.create_verified_users_table()
 
         self.tree.add_command(

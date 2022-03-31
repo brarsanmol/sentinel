@@ -60,9 +60,8 @@ class Verify(app_commands.Command):
         if EMAIL_PATTERN.match(email_address, re.IGNORECASE):
             token = self.generate_token()
 
-            # TODO - SQL throw's an exception when a non-unique value is submitted, catch this for every driver.
             try:
-                self.queries.create_token(email_address=email_address, token=token)
+                self.queries.create_verification_token(email_address=email_address, token=token)
             except IntegrityError:
                 # An exception means we've failed a uniqueness condition.
                 await interaction.response.send_message(

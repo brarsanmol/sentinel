@@ -1,4 +1,4 @@
--- :name create_tokens_table
+-- :name create_verification_tokens_table
 CREATE TABLE IF NOT EXISTS verification_tokens (
     identifier INTEGER PRIMARY KEY,
     email_address VARCHAR(255) NOT NULL UNIQUE,
