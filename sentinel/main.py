@@ -5,6 +5,7 @@ import discord
 import pugsql
 from discord import app_commands
 
+from sentinel.commands.code import Code
 from sentinel.commands.verify import Verify
 
 
@@ -29,4 +30,6 @@ class Sentinel(discord.Client):
                 self.queries,
             )
         )
+        self.tree.add_command(Code(self.queries))
+
         await self.tree.sync()
