@@ -6,17 +6,20 @@ import discord
 import sendgrid
 from discord import app_commands
 from sendgrid.helpers.mail import Mail
+from sqlalchemy.exc import IntegrityError
 
-from sentinel.decorators.is_direct_message_channel import (  # noqa
-    is_direct_message_channel,
-)
+from sentinel.decorators.is_direct_message_channel import is_direct_message_channel
 
 EMAIL_PATTERN = re.compile(r"[a-zA-Z]+\.[a-zA-Z]+@mail\.mcgill\.ca")
 
 
 class Verify(app_commands.Command):
     def __init__(self, api_key: str, addresser: str, queries: Any):
-        super().__init__(name="verify", description="", callback=self.verify)
+        super().__init__(
+            name="verify",
+            description="Send a verification token to your McGill issued e-mail address.",
+            callback=self.verify,
+        )
 
         self.mailer = sendgrid.SendGridAPIClient(api_key=api_key)
         self.addresser = addresser
@@ -48,10 +51,10 @@ class Verify(app_commands.Command):
         Your Sentinel discord verification code is {token}.
 
         To verify yourself enter /code {token} in your direct message channel with Sentinel.
-        """,  # noqa
+        """,
         )
 
-    @app_commands.describe(email_address="Your @mail.mcgill.ca e-mail address.")  # noqa
+    @app_commands.describe(email_address="Your @mail.mcgill.ca e-mail address.")
     @is_direct_message_channel()
     async def verify(self, interaction: discord.Interaction, email_address: str) -> None:
         if EMAIL_PATTERN.match(email_address, re.IGNORECASE):
@@ -60,7 +63,8 @@ class Verify(app_commands.Command):
             # TODO - SQL throw's an exception when a non-unique value is submitted, catch this for every driver.
             try:
                 self.queries.create_token(email_address=email_address, token=token)
-            except:  # noqa
+            except IntegrityError:
+                # An exception means we've failed a uniqueness condition.
                 await interaction.response.send_message(
                     "The e-mail address provided is already in use.", ephemeral=True
                 )
