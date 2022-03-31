@@ -3,7 +3,7 @@ import os
 
 import discord
 import pugsql
-from discord import app_commands
+from discord import Member, app_commands
 
 from sentinel.commands.code import Code
 from sentinel.commands.verify import Verify
@@ -22,6 +22,7 @@ class Sentinel(discord.Client):
     async def on_ready(self):
         self.queries.connect(self.configuration.get("Database", "Url"))
         self.queries.create_tokens_table()
+        self.queries.create_verified_users_table()
 
         self.tree.add_command(
             Verify(
@@ -33,3 +34,7 @@ class Sentinel(discord.Client):
         self.tree.add_command(Code(self.queries))
 
         await self.tree.sync()
+
+    async def on_member_join(self, member: Member) -> None:
+        if self.queries.find_by_discord_identifier(member.id):
+            await member.add_roles(discord.utils.get(member.guild.roles, name="Verified"))
