@@ -14,7 +14,23 @@ class Sentinel(discord.Client):
         super().__init__(loop=None, intents=discord.Intents().all())
 
         self.configuration = configparser.ConfigParser()
-        self.configuration.read(os.path.join(os.path.dirname(__file__), "configuration.ini"))
+
+        if os.path.isfile(os.path.join(os.path.dirname(__file__), "configuration.ini")):
+            self.configuration.read(os.path.join(os.path.dirname(__file__), "configuration.ini"))
+        else:
+            dotenv()
+            self.configuration.read_dict({
+                "Database": {
+                    "Url": os.environ.get("DATABASE_URL")
+                },
+                "Discord": {
+                    "Token": os.environ.get("DISCORD_TOKEN")
+                },
+                "Email": {
+                    "ApiKey": os.environ.get("EMAIL_API_KEY"),
+                    "Addresser": os.environ.get("EMAIL_ADDRESSER")
+                }
+            })
 
         self.queries = pugsql.module(os.path.join(os.path.dirname(__file__), "queries"))
         self.tree = app_commands.CommandTree(self)
