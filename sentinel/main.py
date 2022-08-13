@@ -18,7 +18,6 @@ class Sentinel(discord.Client):
         if os.path.isfile(os.path.join(os.path.dirname(__file__), "configuration.ini")):
             self.configuration.read(os.path.join(os.path.dirname(__file__), "configuration.ini"))
         else:
-            dotenv()
             self.configuration.read_dict({
                 "Database": {
                     "Url": os.environ.get("DATABASE_URL")
