@@ -32,7 +32,7 @@ class Verify(app_commands.Command):
     def get_appropriate_message(self, status_code: int):
         match status_code:
             case 200:
-                return "A verification code has been sent to your inbox."
+                return "A verification code has been sent to your inbox. If you do not see it within a few minutes, please check your spam!"
             case 401:
                 return "The bot is currently failing to authenticate with SendGrid."
             case 429:
