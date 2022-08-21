@@ -1,5 +1,6 @@
 import configparser
 import os
+import logging
 
 import discord
 import pugsql
@@ -7,11 +8,13 @@ from discord import Member, app_commands
 
 from sentinel.commands.code import Code
 from sentinel.commands.verify import Verify
+from sentinel.commands.unverify import Unverify
 
 
 class Sentinel(discord.Client):
     def __init__(self, **options):
         super().__init__(loop=None, intents=discord.Intents().all())
+        self.create_logging_setup()
 
         self.configuration = configparser.ConfigParser()
 
@@ -33,6 +36,16 @@ class Sentinel(discord.Client):
 
         self.queries = pugsql.module(os.path.join(os.path.dirname(__file__), "queries"))
         self.tree = app_commands.CommandTree(self)
+    
+    def create_logging_setup(self):
+        logger = logging.getLogger('Sentinel')
+        handler = logging.StreamHandler()
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
+
+        return logger
 
     async def on_ready(self):
         self.queries.connect(self.configuration.get("Database", "Url"))
@@ -47,6 +60,7 @@ class Sentinel(discord.Client):
             )
         )
         self.tree.add_command(Code(self.queries))
+        self.tree.add_command(Unverify(self.queries))
 
         await self.tree.sync()
 

@@ -1,5 +1,6 @@
 import discord
-from discord import Member, app_commands
+from discord import Member, app_commands, Forbidden, HttpException
+import logging
 
 
 class Unverify(app_commands.Command):
@@ -10,11 +11,18 @@ class Unverify(app_commands.Command):
             callback=self.unverify,
         )
 
+        self.logger = logging.getLogger('Sentinel')
+
         self.queries = queries
 
     async def unverify_on_mutual_guilds(self, user: Member) -> None:
         for guild in user.mutual_guilds:
-            await user.remove_roles(discord.utils.get(guild.roles, name="Verified"))
+            try:
+                await user.remove_roles(discord.utils.get(guild.roles, name="Verified"))
+            except Forbidden as exception:
+                self.logger.warning(f"Failed to remove verified role from user. Bot does not have sufficient permissions in guild. Error = {repr(exception)}")
+            except HttpException as exception:
+                self.logger.error(f"Failed to remove verified role from user. An unknown error occurred. Error = {repr(exception)}")
 
     async def unverify(self, interaction: discord.Interaction) -> None:
         self.queries.delete_verified_user(interaction.user.id)
