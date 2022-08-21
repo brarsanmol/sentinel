@@ -23,14 +23,14 @@ class Sentinel(discord.Client):
         else:
             self.configuration.read_dict({
                 "Database": {
-                    "Url": os.environ.get("DATABASE_URL")
+                    "Url": str(os.environ.get("DATABASE_URL"))
                 },
                 "Discord": {
-                    "Token": os.environ.get("DISCORD_TOKEN")
+                    "Token": str(os.environ.get("DISCORD_TOKEN"))
                 },
                 "Email": {
-                    "ApiKey": os.environ.get("EMAIL_API_KEY"),
-                    "Addresser": os.environ.get("EMAIL_ADDRESSER")
+                    "ApiKey": str(os.environ.get("EMAIL_API_KEY")),
+                    "Addresser": str(os.environ.get("EMAIL_ADDRESSER"))
                 }
             })
 
