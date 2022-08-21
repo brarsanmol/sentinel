@@ -9,7 +9,7 @@ homepage = "https://sentinel.anmolbrar.ca"
 repository = "https://github.com/brarsanmol/sentinel"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "3.10.6"
 "discord.py" = {git = "https://github.com/Rapptz/discord.py.git", rev = "master"}
 sendgrid = "^6.9.7"
 pugsql = "^0.2.4"
