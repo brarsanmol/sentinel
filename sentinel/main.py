@@ -23,7 +23,7 @@ class Sentinel(discord.Client):
         else:
             self.configuration.read_dict({
                 "Database": {
-                    "Url": str(os.environ.get("DATABASE_URL"))
+                    "Url": str(os.environ.get("DATABASE_URL")).replace("postgres://", "postgresql://", 1)
                 },
                 "Discord": {
                     "Token": str(os.environ.get("DISCORD_TOKEN"))
