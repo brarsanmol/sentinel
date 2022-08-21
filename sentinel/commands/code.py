@@ -1,5 +1,6 @@
 import discord
 from discord import User, app_commands
+import logging
 
 from sentinel.decorators.is_direct_message_channel import is_direct_message_channel
 
