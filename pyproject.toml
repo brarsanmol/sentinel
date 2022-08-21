@@ -13,6 +13,7 @@ python = "3.10.6"
 "discord.py" = {git = "https://github.com/Rapptz/discord.py.git", rev = "master"}
 sendgrid = "^6.9.7"
 pugsql = "^0.2.4"
+logging = "^0.4.9"
 psycopg2 = "^2.9.3"
 
 [tool.poetry.dev-dependencies]
