@@ -1,7 +1,6 @@
 -- :name create_verification_tokens_table
 CREATE TABLE IF NOT EXISTS verification_tokens (
-    identifier INTEGER PRIMARY KEY,
-    email_address VARCHAR(255) NOT NULL UNIQUE,
+    email_address VARCHAR(255) PRIMARY KEY,
     token VARCHAR(6) NOT NULL UNIQUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )
