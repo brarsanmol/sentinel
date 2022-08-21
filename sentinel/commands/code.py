@@ -1,5 +1,6 @@
 import discord
 from discord import User, app_commands
+from discord.errors import HttpException, Forbidden
 
 from sentinel.decorators.is_direct_message_channel import is_direct_message_channel
 
@@ -12,11 +13,19 @@ class Code(app_commands.Command):
             callback=self.code,
         )
 
+        self.logger = logging.getLogger('Sentinel')
+
         self.queries = queries
 
     async def verify_on_mutual_guilds(self, user: User) -> None:
         for guild in user.mutual_guilds:
-            await user.add_roles(discord.utils.get(guild.roles, name="Verified"))
+            try:
+                await user.add_roles(discord.utils.get(guild.roles, name="Verified"))
+                self.logger.info(f"Successfully added verified role to user ({str(user.id)}) on guild ({str(guild.id)}).")
+            except Forbidden as exception:
+                self.logger.warning(f"Failed to add verified role to user ({str(user.id)}) on guild ({str(guild.id)}). Bot does not have sufficient permissions in guild. Error = {repr(exception)}")
+            except HttpException as exception:
+                self.logger.error(f"Failed to add verified role to user ({str(user.id)}) on guild ({str(guild.id)}). An unknown error occurred. Error = {repr(exception)}")
 
     @app_commands.describe(token="The verification token e-mailed to you.")
     @is_direct_message_channel()

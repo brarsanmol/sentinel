@@ -1,5 +1,6 @@
 import discord
-from discord import Member, app_commands, Forbidden, HttpException
+from discord.errors import HttpException, Forbidden
+from discord import Member, app_commands
 import logging
 
 
@@ -20,9 +21,9 @@ class Unverify(app_commands.Command):
             try:
                 await user.remove_roles(discord.utils.get(guild.roles, name="Verified"))
             except Forbidden as exception:
-                self.logger.warning(f"Failed to remove verified role from user. Bot does not have sufficient permissions in guild. Error = {repr(exception)}")
+                self.logger.warning(f"Failed to remove verified role from user ({str(user.id)}) on guild ({str(guild.id)}). Bot does not have sufficient permissions. Error = {repr(exception)}")
             except HttpException as exception:
-                self.logger.error(f"Failed to remove verified role from user. An unknown error occurred. Error = {repr(exception)}")
+                self.logger.error(f"Failed to remove verified role from user ({str(user.id)}) on guild ({str(guild.id)}). An unknown error occurred. Error = {repr(exception)}")
 
     async def unverify(self, interaction: discord.Interaction) -> None:
         self.queries.delete_verified_user(interaction.user.id)
