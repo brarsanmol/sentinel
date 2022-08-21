@@ -1,0 +1,1 @@
+worker: python3 sentinel/__init__.py
