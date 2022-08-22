@@ -27,4 +27,4 @@ class Unverify(app_commands.Command):
     async def unverify(self, interaction: discord.Interaction) -> None:
         self.queries.delete_verified_user(interaction.user.id)
         self.unverify_on_mutual_guilds(interaction.user)
-        interaction.response.send_message("Your account has been unverified.", ephemeral=True)
+        await interaction.response.send_message("Your account has been unverified.", ephemeral=True)

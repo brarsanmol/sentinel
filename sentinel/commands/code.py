@@ -34,6 +34,6 @@ class Code(app_commands.Command):
         if self.queries.delete_verification_token(token=token) > 0:
             self.queries.create_verified_user(identifier=interaction.user.id, email_address=result['email_address'])
             await self.verify_on_mutual_guilds(interaction.user)
-            interaction.response.send_message("You have been successfully verified!", ephemeral=True)
+            await interaction.response.send_message("You have been successfully verified!", ephemeral=True)
         else:
-            interaction.response.send_message("The verification token provided is invalid.", ephemeral=True)
+            await interaction.response.send_message("The verification token provided is invalid.", ephemeral=True)
