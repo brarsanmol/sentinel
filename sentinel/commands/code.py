@@ -30,8 +30,9 @@ class Code(app_commands.Command):
     @app_commands.describe(token="The verification token e-mailed to you.")
     @is_direct_message_channel()
     async def code(self, interaction: discord.Interaction, token: str) -> None:
+        result = self.queries.find_by_verification_token(token=token)
         if self.queries.delete_verification_token(token=token) > 0:
-            self.queries.create_verified_user(identifier=interaction.user.id)
+            self.queries.create_verified_user(identifier=interaction.user.id, email_address=result['email_address'])
             await self.verify_on_mutual_guilds(interaction.user)
             interaction.response.send_message("You have been successfully verified!", ephemeral=True)
         else:
