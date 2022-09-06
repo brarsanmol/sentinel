@@ -1,6 +1,6 @@
+import logging
 import re
 import secrets
-import logging
 from typing import Any
 
 import discord
@@ -22,7 +22,7 @@ class Verify(app_commands.Command):
             callback=self.verify,
         )
 
-        self.logger = logging.getLogger('Sentinel')
+        self.logger = logging.getLogger("Sentinel")
 
         self.mailer = sendgrid.SendGridAPIClient(api_key=api_key)
         self.addresser = addresser
@@ -33,18 +33,25 @@ class Verify(app_commands.Command):
         return secrets.token_urlsafe(4)
 
     def get_appropriate_message(self, response):
-        match response.status_code:
-            case 200:
+        status_code: int = response.status_code
+        match status_code:
+            case 200 | 202:
                 self.logger.info("Successfully e-mailed verification token to user.")
                 return "A verification code has been sent to your inbox. If you do not see it within a few minutes, please check your spam!"
             case 401:
-                self.logger.critical(f"Failed to e-mail verification token. SendGrid failed to authenticate. Error = {repr(response)}")
+                self.logger.critical(
+                    f"Failed to e-mail verification token. SendGrid failed to authenticate. Error = {repr(response)}"
+                )
                 return "The bot is currently failing to authenticate with SendGrid."
             case 429:
-                self.logger.critical(f"Failed to e-mail verification token. SendGrid rate limit has been reached. Error = {repr(response)}")
+                self.logger.critical(
+                    f"Failed to e-mail verification token. SendGrid rate limit has been reached. Error = {repr(response)}"
+                )
                 return "The bot is unable to send verification e-mail as it has reached it's SendGrid rate limit."
             case _:
-                self.logger.critical(f"Failed to e-mail verification token. Unknown error has occurred. Error = {repr(response)}")
+                self.logger.critical(
+                    f"Failed to e-mail verification token. Unknown error has occurred. Error = {response.status_code}"
+                )
                 return "An unknown error occurred."
 
     def get_message(self, addressee: str, token: str) -> None:
@@ -69,14 +76,19 @@ class Verify(app_commands.Command):
 
             try:
                 self.logger.info("Saving verification token and e-mail address to database.")
-                self.queries.create_verification_token(email_address=email_address, token=token)
+                self.queries.create_verification_token(
+                    email_address=email_address,
+                    token=token,
+                )
             except IntegrityError as exception:
-                self.logger.warning(f"Failed to save verification token and e-mail address to table. Error = {repr(exception)}")
+                self.logger.warning(
+                    f"Failed to save verification token and e-mail address to table. Error = {repr(exception)}"
+                )
                 # An exception means we've failed a uniqueness condition.
                 await interaction.response.send_message(
                     "The e-mail address provided is already in use.", ephemeral=True
                 )
-            
+
             response = self.mailer.send(self.get_message(email_address, token))
             await interaction.response.send_message(self.get_appropriate_message(response), ephemeral=True)
         else:
