@@ -1,6 +1,7 @@
 import configparser
 import logging
 import os
+import sys
 
 import discord
 import pugsql
@@ -37,7 +38,7 @@ class Sentinel(discord.Client):
 
     def create_logging_setup(self):
         logger = logging.getLogger("Sentinel")
-        handler = logging.StreamHandler()
+        handler = logging.StreamHandler(sys.stdout)
         formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
         handler.setFormatter(formatter)
@@ -62,8 +63,8 @@ class Sentinel(discord.Client):
 
         try:
             await self.tree.sync()
-        except ClientException as exception:
-            self.logger.critical(f"Failed to sync commands as an invalid or no application token was provided.")
+        except ClientException:
+            self.logger.critical("Failed to sync commands as an invalid or no application token was provided.")
         except HTTPException as exception:
             self.logger.error(f"Failed to sync commands due to an unknown error. Error = {repr(exception.text)}")
 
