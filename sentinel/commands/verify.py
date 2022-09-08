@@ -11,7 +11,7 @@ from sqlalchemy.exc import IntegrityError
 
 from sentinel.decorators.is_direct_message_channel import is_direct_message_channel
 
-EMAIL_PATTERN = re.compile(r"[a-zA-Z]+\.[a-zA-Z]+[0-9]{0,2}?@mail\.mcgill\.ca")
+EMAIL_PATTERN = re.compile(r".*@mail\.mcgill\.ca")
 
 
 class Verify(app_commands.Command):
