@@ -37,14 +37,12 @@ class Sentinel(discord.Client):
         self.tree = app_commands.CommandTree(self)
 
     def create_logging_setup(self):
-        logger = logging.getLogger("Sentinel")
-        handler = logging.StreamHandler(sys.stdout)
-        formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+        logging.basicConfig(
+            format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+            handlers=[logging.StreamHandler(sys.stdout)],
+        )
 
-        handler.setFormatter(formatter)
-        logger.addHandler(handler)
-
-        return logger
+        return logging.getLogger("Sentinel")
 
     async def on_ready(self):
         self.queries.connect(self.configuration.get("Database", "Url"))
